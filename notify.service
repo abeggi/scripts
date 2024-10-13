@@ -1,5 +1,5 @@
 [Unit]
-Description=Esecuzione dello script personalizzato dopo l'avvio della rete
+Description=Esecuzione dello script personalizzato dopo avvio della rete
 After=network-online.target
 Wants=network-online.target
 [Service]
