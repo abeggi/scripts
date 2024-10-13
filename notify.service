@@ -1,10 +1,11 @@
 [Unit]
 Description=Esecuzione dello script personalizzato dopo avvio della rete
-After=network-online.target
+After=network.target network-online.target
 Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/notify.sh
 RemainAfterExit=true
+ExecStartPre=/bin/sleep 20
 [Install]
 WantedBy=multi-user.target
