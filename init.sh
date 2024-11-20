@@ -9,6 +9,9 @@ wget https://github.com/abeggi/scripts/raw/main/aggiorna.sh
 chmod +x aggiorna.sh
 wget https://github.com/abeggi/scripts/raw/main/sysinfo.sh
 chmod +x sysinfo.sh
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+wget https://github.com/abeggi/scripts/raw/main/fileman.sh
+chmod +x fileman.sh
 timedatectl set-timezone Europe/Rome
 # File .bashrc dell'utente root
 BASHRC="/root/.bashrc"
