@@ -18,6 +18,7 @@ mem_used=$(free -h | awk "NR==2 {print \$3}")
 cpu_load=$(awk "{print \$1 \" (1 min), \" \$2 \" (5 min), \" \$3 \" (15 min)\"}" /proc/loadavg)
 
 # Stampa le informazioni con una tabella ben allineata
+/usr/bin/clear -x
 echo "======================================="
 echo "          Informazioni di Sistema      "
 echo "======================================="
