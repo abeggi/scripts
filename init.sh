@@ -1,5 +1,4 @@
 #! /bin/bash
-#
 cd
 sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /root/.bashrc
 apt update
@@ -25,3 +24,4 @@ else
     echo "$LINE_TO_ADD" >> "$BASHRC"
     echo "La riga '$LINE_TO_ADD' è stata aggiunta a $BASHRC."
 fi
+source .bashrc
