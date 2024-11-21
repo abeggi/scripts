@@ -1,4 +1,5 @@
 #!/bin/bash
+info=$(uname -a)
 
 # Ottieni il nome host
 hostname=$(hostname)
