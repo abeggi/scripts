@@ -3,13 +3,13 @@ cd
 sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /root/.bashrc
 apt update
 apt install curl wget mc htop ncdu tldr -y
-wget https://github.com/abeggi/scripts/raw/main/.bash_aliases
-wget https://github.com/abeggi/scripts/raw/main/aggiorna.sh
+wget https://github.com/abeggi/scripts/raw/main/.bash_aliases -O .bash_aliases
+wget https://github.com/abeggi/scripts/raw/main/aggiorna.sh -O aggiorna.sh
 chmod +x aggiorna.sh
-wget https://github.com/abeggi/scripts/raw/main/sysinfo.sh
+wget https://github.com/abeggi/scripts/raw/main/sysinfo.sh -O sysinfo.sh
 chmod +x sysinfo.sh
 curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
-wget https://github.com/abeggi/scripts/raw/main/fileman.sh
+wget https://github.com/abeggi/scripts/raw/main/fileman.sh -O fileman.sh
 chmod +x fileman.sh
 timedatectl set-timezone Europe/Rome
 # File .bashrc dell'utente root
