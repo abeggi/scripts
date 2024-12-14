@@ -12,6 +12,7 @@ curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bas
 wget https://github.com/abeggi/scripts/raw/main/fileman.sh -O fileman.sh
 chmod +x fileman.sh
 timedatectl set-timezone Europe/Rome
+source .bashrc
 # File .bashrc dell'utente root
 BASHRC="/root/.bashrc"
 # Riga da aggiungere
