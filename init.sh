@@ -3,6 +3,7 @@ cd
 sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /root/.bashrc
 apt update
 apt install curl wget mc htop ncdu tldr duf bat -y
+apt purge apparmor apparmor-utils -y
 wget https://github.com/abeggi/scripts/raw/main/.bash_aliases -O .bash_aliases
 wget https://github.com/abeggi/scripts/raw/main/aggiorna.sh -O aggiorna.sh
 chmod +x aggiorna.sh
