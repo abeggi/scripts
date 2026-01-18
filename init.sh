@@ -9,6 +9,8 @@ wget https://github.com/abeggi/scripts/raw/main/aggiorna.sh -O aggiorna.sh
 chmod +x aggiorna.sh
 wget https://github.com/abeggi/scripts/raw/main/sysinfo.sh -O sysinfo.sh
 chmod +x sysinfo.sh
+wget https://github.com/abeggi/scripts/raw/main/n.sh -O n.sh
+chmod +x n.sh
 curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 wget https://github.com/abeggi/scripts/raw/main/fileman.sh -O fileman.sh
 chmod +x fileman.sh
