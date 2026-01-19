@@ -65,7 +65,7 @@ download_script "aggiorna.sh"
 download_script "sysinfo.sh"
 download_script "fileman.sh"
 
-info "Getting n (node manager)..."
+info "Getting n (TCP/IP port info)..."
 wget -q "$REPO_URL/n.sh" -O /usr/local/bin/n && chmod +x /usr/local/bin/n
 
 # Filebrowser
