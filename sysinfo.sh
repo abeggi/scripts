@@ -1,35 +1,49 @@
 #!/bin/bash
-info=$(uname -a)
 
-# Ottieni il nome host
+# Definition of colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+NC='\033[0m'
+
+# Clear screen keeping scrollback
+clear -x
+
+# Gather Info
 hostname=$(hostname)
+ip_address=$(hostname -I | awk '{print $1}')
+disk_usage=$(df -h / | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')
+mem_usage=$(free -h | awk 'NR==2 {print $3 " / " $2}')
+load=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
+up=$(uptime -p | sed 's/up //')
 
-# Ottieni l'indirizzo IP
-ip_address=$(hostname -I | awk "{print \$1}")
+# OS Name
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    os_name="$PRETTY_NAME"
+else
+    os_name=$(uname -srm)
+fi
 
-# Ottieni lo spazio disco totale e utilizzato
-disk_usage_total=$(df -h / | awk "NR==2 {print \$2}")
-disk_usage_used=$(df -h / | awk "NR==2 {print \$3}")
+# Kernel
+kernel=$(uname -r)
 
-# Ottieni la memoria RAM totale e utilizzata
-mem_total=$(free -h | awk "NR==2 {print \$2}")
-mem_used=$(free -h | awk "NR==2 {print \$3}")
+# Header
+echo -e "${BLUE}=======================================${NC}"
+echo -e "${WHITE}      Informazioni di Sistema          ${NC}"
+echo -e "${BLUE}=======================================${NC}"
 
-# Ottieni il carico della CPU dai dati di /proc/loadavg
-cpu_load=$(awk "{print \$1 \" (1 min), \" \$2 \" (5 min), \" \$3 \" (15 min)\"}" /proc/loadavg)
+# Print Info
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "OS" "$os_name"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "Kernel" "$kernel"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "Hostname" "$hostname"
+printf "${CYAN}%-20s${NC} : ${GREEN}%s${NC}\n" "IP Address" "$ip_address"
+printf "${CYAN}%-20s${NC} : ${YELLOW}%s${NC}\n" "Disk (Used/Tot)" "$disk_usage"
+printf "${CYAN}%-20s${NC} : ${YELLOW}%s${NC}\n" "RAM (Used/Tot)" "$mem_usage"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "CPU Load (1,5,15)" "$load"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "Uptime" "$up"
+echo -e "${BLUE}=======================================${NC}"
 
-#uptime
-up=$(uptime -p)
-
-# Stampa le informazioni con una tabella ben allineata
-/usr/bin/clear -x
-echo "======================================="
-echo "          Informazioni di Sistema      "
-echo "======================================="
-echo "$info"
-printf "%-20s : %s %s\n" "Hostname" "$hostname"
-printf "%-20s : %s %s\n" "Indirizzo IP" "$ip_address"
-printf "%-20s : %s / %s\n" "Disco usato / totale" "$disk_usage_used" "$disk_usage_total"
-printf "%-20s : %s / %s\n" "RAM usata / totale" "$mem_used"  "$mem_total"
-printf "%-20s : %s %s\n" "Carico CPU" "$cpu_load"
-printf "%-20s : %s %s\n" "Uptime" "$up"
