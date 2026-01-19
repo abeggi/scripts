@@ -100,5 +100,6 @@ else
 fi
 
 log "Setup completato."
+WHITE='\033[1;37m'
 IP=$(hostname -I | awk '{print $1}')
-echo -e "${GREEN}[*] SSH Connection: ssh root@$IP${NC}"
+echo -e "${GREEN}[*] SSH Connection: ${WHITE}ssh root@$IP${NC}"
