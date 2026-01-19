@@ -31,6 +31,10 @@ fi
 # Kernel
 kernel=$(uname -r)
 
+# CPU Cores
+cpu_cores=$(nproc)
+cpu_model=$(grep -m1 "model name" /proc/cpuinfo | awk -F: '{print $2}' | sed 's/^[ \t]*//')
+
 # Header
 echo -e "${BLUE}=======================================${NC}"
 echo -e "${WHITE}      Informazioni di Sistema          ${NC}"
@@ -43,7 +47,8 @@ printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "Hostname" "$hostname"
 printf "${CYAN}%-20s${NC} : ${GREEN}%s${NC}\n" "IP Address" "$ip_address"
 printf "${CYAN}%-20s${NC} : ${YELLOW}%s${NC}\n" "Disk (Used/Tot)" "$disk_usage"
 printf "${CYAN}%-20s${NC} : ${YELLOW}%s${NC}\n" "RAM (Used/Tot)" "$mem_usage"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "CPU Model" "$cpu_model"
+printf "${CYAN}%-20s${NC} : ${WHITE}%s Cores${NC}\n" "CPU Cores" "$cpu_cores"
 printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "CPU Load (1,5,15)" "$load"
 printf "${CYAN}%-20s${NC} : ${WHITE}%s${NC}\n" "Uptime" "$up"
 echo -e "${BLUE}=======================================${NC}"
-
