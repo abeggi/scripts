@@ -5,6 +5,7 @@ set -e
 export DEBIAN_FRONTEND=noninteractive
 
 # Colori
+WHITE='\033[1;37m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
@@ -100,6 +101,6 @@ else
 fi
 
 log "Setup completato."
-WHITE='\033[1;37m'
+
 IP=$(hostname -I | awk '{print $1}')
 echo -e "${GREEN}[*] SSH Connection: ${WHITE}ssh root@$IP${NC}"
