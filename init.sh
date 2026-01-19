@@ -85,4 +85,20 @@ if ! grep -Fxq "$HOME_DIR/sysinfo.sh" "$HOME_DIR/.bashrc"; then
     info "Added sysinfo.sh to .bashrc"
 fi
 
+# 6. Configurazione SSH
+log "Configuring SSH..."
+if [ -f /etc/ssh/sshd_config ]; then
+    info "Enabling Root Login..."
+    sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+    # Assicura anche PasswordAuthentication (spesso richiesto insieme)
+    sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    
+    info "Restarting SSH service..."
+    service ssh restart >/dev/null 2>&1 || systemctl restart ssh >/dev/null 2>&1 || /etc/init.d/ssh restart >/dev/null 2>&1 || warn "Could not restart SSH service"
+else
+    warn "SSH config file not found, skipping SSH setup."
+fi
+
 log "Setup completato."
+IP=$(hostname -I | awk '{print $1}')
+echo -e "${GREEN}[*] SSH Connection: ssh root@$IP${NC}"
