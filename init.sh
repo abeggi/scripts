@@ -40,6 +40,12 @@ apt-get update -qq >/dev/null
 info "apt install utilities..."
 apt-get install -qq -y curl wget mc htop ncdu tldr duf bat >/dev/null
 
+info "apt upgrade..."
+apt-get upgrade -qq -y >/dev/null
+
+info "apt dist-upgrade..."
+apt-get dist-upgrade -qq -y >/dev/null
+
 info "apt purge apparmor..."
 apt-get purge -qq -y apparmor apparmor-utils >/dev/null 2>&1 || true
 
@@ -65,7 +71,7 @@ download_script "aggiorna.sh"
 download_script "sysinfo.sh"
 download_script "fileman.sh"
 
-info "Getting n (TCP/IP port info)..."
+info "Getting n (node manager)..."
 wget -q "$REPO_URL/n.sh" -O /usr/local/bin/n && chmod +x /usr/local/bin/n
 
 # Filebrowser
