@@ -2,19 +2,20 @@
 
 # Configurazione
 DOCKGE_DIR="/dockge"
+PORT="5001"
 
 # Colori
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Funzione Aiuto
 show_help() {
-    echo -e "${GREEN}Gestore Installazione Dockge${NC}"
+    echo -e "${BLUE}Gestore Installazione Dockge${NC}"
     echo -e "Utilizzo: $0 {install|uninstall}"
     echo "-----------------------------------"
-    echo "install   : Crea /dockge, scarica il compose e avvia il servizio"
-    echo "uninstall : Rimuove container, immagini, volumi e la directory /dockge"
+    echo "install   : Configura Dockge in /dockge"
+    echo "uninstall : Rimuove tutto (dati, volumi e immagini)"
     echo ""
 }
 
@@ -29,30 +30,46 @@ check_requirements() {
     fi
 }
 
+get_ip() {
+    # Tenta di recuperare l'IP locale principale
+    hostname -I | awk '{print $1}'
+}
+
 install_dockge() {
-    echo -e "${GREEN}Inizio installazione...${NC}"
+    echo -e "${BLUE}Inizio installazione...${NC}"
+    
     sudo mkdir -p "$DOCKGE_DIR/stacks"
     sudo chown -R $USER:$USER "$DOCKGE_DIR"
-    cd "$DOCKGE_DIR"
+    cd "$DOCKGE_DIR" || exit
+    
     curl -sSL https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml --output docker-compose.yaml
+    
+    echo -e "${BLUE}Avvio dei container...${NC}"
     docker compose up -d
-    echo -e "${GREEN}Dockge pronto su porta 5001!${NC}"
+    
+    IP_ADDR=$(get_ip)
+    
+    echo -e "\n${GREEN}==============================================${NC}"
+    echo -e "${GREEN}   DOCKGE INSTALLATO CON SUCCESSO!${NC}"
+    echo -e "${GREEN}==============================================${NC}"
+    echo -e "Puoi aggiungerlo alla tua homepage ${BLUE}Heimdall${NC} usando:"
+    echo -e "${BLUE}http://${IP_ADDR}:${PORT}${NC}"
+    echo -e "${GREEN}==============================================${NC}\n"
 }
 
 uninstall_dockge() {
     echo -e "${RED}Rimozione totale in corso...${NC}"
     if [ -d "$DOCKGE_DIR" ]; then
-        cd "$DOCKGE_DIR"
+        cd "$DOCKGE_DIR" || exit
         docker compose down --volumes --rmi all
         cd ..
         sudo rm -rf "$DOCKGE_DIR"
-        echo -e "${GREEN}Pulizia completata.${NC}"
+        echo -e "${GREEN}Pulizia completata. Sistema pulito.${NC}"
     else
         echo -e "${RED}Cartella $DOCKGE_DIR non trovata.${NC}"
     fi
 }
 
-# Controllo se l'argomento è vuoto
 if [ -z "$1" ]; then
     show_help
     exit 0
@@ -65,7 +82,6 @@ case "$1" in
         install_dockge
         ;;
     uninstall)
-        # Il flag < /dev/tty permette l'input interattivo via pipe (curl | bash)
         read -p "Confermi la cancellazione totale? (y/n) " -n 1 -r < /dev/tty
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
