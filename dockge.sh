@@ -8,6 +8,7 @@ PORT="5001"
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m' # Giallo Bold
 NC='\033[0m'
 
 show_help() {
@@ -31,7 +32,6 @@ check_requirements() {
 }
 
 get_ip() {
-    # Tenta di recuperare l'IP locale principale
     hostname -I | awk '{print $1}'
 }
 
@@ -53,7 +53,7 @@ install_dockge() {
     echo -e "${GREEN}   DOCKGE INSTALLATO CON SUCCESSO!${NC}"
     echo -e "${GREEN}==============================================${NC}"
     echo -e "Puoi aggiungerlo alla tua homepage ${BLUE}Heimdall${NC} usando:"
-    echo -e "${BLUE}http://${IP_ADDR}:${PORT}${NC}"
+    echo -e "${YELLOW}http://${IP_ADDR}:${PORT}${NC}"
     echo -e "${GREEN}==============================================${NC}\n"
 }
 
