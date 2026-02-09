@@ -14,8 +14,9 @@ NC='\033[0m' # No Color
 LOCAL_IP=$(hostname -I | awk '{print $1}')
 
 # Print header with local IP
-echo -e "${BOLD}${CYAN}Local IP: ${GREEN}${LOCAL_IP}${NC}"
 echo ""
+echo -e "${BOLD}${CYAN}Local IP: ${GREEN}${LOCAL_IP}${NC}"
+
 
 # Header adapted for new columns
 printf "${BOLD}${BLUE}%-6s %-25s %-25s %s${NC}\n" "PROTO" "LOCAL ADDR" "PORT (SERVICE)" "PROCESS"
