@@ -15,8 +15,7 @@ printf "${BOLD}${BLUE}%-6s %-25s %-25s %s${NC}\n" "PROTO" "LOCAL ADDR" "PORT (SE
 echo "----------------------------------------------------------------------------------"
 
 # Use process substitution instead of pipe for better performance and variable scope
-# Added -a flag to show all connections (not just established)
-# Exclude loopback interfaces (127.0.0.1 and ::1) for cleaner output
+# -t = TCP, -u = UDP, -l = LISTENING only, -n = numeric, -p = process
 while IFS= read -r line; do
     [[ -z "$line" ]] && continue
 
@@ -54,11 +53,6 @@ while IFS= read -r line; do
             addr="$local_full"
             port_part=""
         fi
-    fi
-
-    # Skip loopback addresses for cleaner output
-    if [[ "$addr" == "127.0.0.1" || "$addr" == "::1" || "$addr" == "localhost" ]]; then
-        continue
     fi
 
     # Service name resolution
@@ -111,4 +105,4 @@ while IFS= read -r line; do
 
     # Print row with colors
     printf "${c_proto}%-6s${NC} %-25s ${YELLOW}%-25s${NC} %s\n" "$proto" "$addr" "$port_display" "$process"
-done < <(ss -tulnpa 2>/dev/null | tail -n +2)
+done < <(ss -tulnp 2>/dev/null | tail -n +2)
