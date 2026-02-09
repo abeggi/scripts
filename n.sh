@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Definition of colors
 RED='\033[0;31m'
@@ -9,11 +10,21 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
+# Get local IP address (first non-loopback address)
+LOCAL_IP=$(hostname -I | awk '{print $1}')
+
+# Print header with local IP
+echo ""
+echo -e "${BOLD}${CYAN}Local IP: ${GREEN}${LOCAL_IP}${NC}"
+
+
 # Header adapted for new columns
 printf "${BOLD}${BLUE}%-6s %-25s %-25s %s${NC}\n" "PROTO" "LOCAL ADDR" "PORT (SERVICE)" "PROCESS"
 echo "----------------------------------------------------------------------------------"
 
-ss -tulnpe 2>/dev/null | tail -n +2 | while read -r line; do
+# Use process substitution instead of pipe for better performance and variable scope
+# -t = TCP, -u = UDP, -l = LISTENING only, -n = numeric, -p = process
+while IFS= read -r line; do
     [[ -z "$line" ]] && continue
 
     # Determine Protocol and color
@@ -27,17 +38,23 @@ ss -tulnpe 2>/dev/null | tail -n +2 | while read -r line; do
         continue
     fi
 
-    set -- $line
-    local_full="$5"
+    # More robust field extraction using array instead of set --
+    read -ra fields <<< "$line"
+    local_full="${fields[4]:-}"
+    
+    [[ -z "$local_full" ]] && continue
 
-    # Extract address and port
+    # Extract address and port with better IPv6/IPv4 handling
     if [[ "$local_full" == \[*\]* ]]; then
+        # IPv6 format
         addr="${local_full%:*}"
         addr="${addr#[}"
         addr="${addr%]}"
         port_part="${local_full##*:}"
     else
+        # IPv4 or IPv6 without brackets
         if [[ "$local_full" == *:* ]]; then
+            # Find last colon for port (handles IPv6)
             addr="${local_full%:*}"
             port_part="${local_full##*:}"
         else
@@ -48,46 +65,47 @@ ss -tulnpe 2>/dev/null | tail -n +2 | while read -r line; do
 
     # Service name resolution
     service=""
-    if [[ -n "$port_part" ]]; then
+    if [[ -n "$port_part" && "$port_part" =~ ^[0-9]+$ ]]; then
+        proto_lower="${proto,,}"
+        
         # Try /etc/services first (awk for precision)
-        proto_lower="${proto,,}" 
         if [[ -f /etc/services ]]; then
-            service=$(awk -v p="$port_part" -v pr="$proto_lower" '$2 == p"/"pr { print $1; exit }' /etc/services 2>/dev/null)
+            service=$(awk -v p="$port_part" -v pr="$proto_lower" '$2 == p"/"pr { print $1; exit }' /etc/services 2>/dev/null) || service=""
         fi
         
-        # Fallback to getent if awk didn't find it or file missing
-        if [[ -z "$service" ]] && command -v getent >/dev/null 2>&1; then
-             service=$(getent services "$port_part/$proto_lower" 2>/dev/null | awk '{print $1}')
+        # Fallback to getent if awk didn't find it
+        if [[ -z "$service" ]] && command -v getent &>/dev/null; then
+            service=$(getent services "$port_part/$proto_lower" 2>/dev/null | awk '{print $1}') || service=""
         fi
     fi
 
     # Format Port column
     port_display="$port_part"
     if [[ -n "$service" ]]; then
-        port_display="$port_display ($service)"
+        port_display="$port_part ($service)"
     fi
 
     process="unknown"
     pid=""
 
-    # Extract PID and Process Name
+    # Extract PID and Process Name with safer regex
     if [[ "$line" =~ pid=([0-9]+) ]]; then
         pid="${BASH_REMATCH[1]}"
         if [[ -r "/proc/$pid/exe" ]]; then
-            real_exe=$(readlink -f "/proc/$pid/exe" 2>/dev/null)
+            real_exe=$(readlink -f "/proc/$pid/exe" 2>/dev/null) || real_exe=""
             if [[ -n "$real_exe" ]]; then
                 process="$(basename "$real_exe")"
             else
-                process=$(< "/proc/$pid/comm" 2>/dev/null) || process="unknown"
+                process=$(<"/proc/$pid/comm" 2>/dev/null) || process="unknown"
             fi
         else
-             # No read permission on /proc/pid/exe
+            # No read permission on /proc/pid/exe - try to extract from ss output
             if [[ "$line" =~ users:\(\(\"([^\"]+)\" ]]; then
                 process="${BASH_REMATCH[1]}"
             fi
         fi
     else
-        # No visible PID
+        # No visible PID - try to extract from ss output
         if [[ "$line" =~ users:\(\(\"([^\"]+)\" ]]; then
             process="${BASH_REMATCH[1]}"
         fi
@@ -95,4 +113,4 @@ ss -tulnpe 2>/dev/null | tail -n +2 | while read -r line; do
 
     # Print row with colors
     printf "${c_proto}%-6s${NC} %-25s ${YELLOW}%-25s${NC} %s\n" "$proto" "$addr" "$port_display" "$process"
-done
+done < <(ss -tulnp 2>/dev/null | tail -n +2)
