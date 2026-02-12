@@ -1,0 +1,12 @@
+{
+  "name": "Script Andrea",
+  "description": "Repository personale script di gestione Homelab",
+  "scripts": [
+    {
+      "id": "aggiorna",
+      "name": "Aggiorna S.O.",
+      "description": "Script per apt",
+      "path": "aggiorna.sh",
+      "os": "linux"
+    }
+   , 
