@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# esegui con wget https://github.com/abeggi/scripts/raw/refs/heads/main/flatnotes.sh -O - | bash
-
 # Verifica se lo script è eseguito come root
 if [ "$EUID" -ne 0 ]; then 
   echo "Errore: Eseguire questo script con sudo (sudo ./setup_flatnotes.sh)"
@@ -29,12 +27,12 @@ echo "Creazione cartella /flatnotes..."
 mkdir -p /flatnotes
 
 # 4. Creazione file compose.yaml
-# Nota: Uso EOF senza apici per permettere l'espansione della variabile $PORT
+# Nota: Uso EOF senza apici per permettere l'espansione delle variabili $PORT
 echo "Creazione file /flatnotes/compose.yaml..."
 cat > /flatnotes/compose.yaml << EOF
 services:
   flatnotes:
-    container_name: flatnotes
+    container_name: flatnotes-$PORT
     image: dullage/flatnotes:latest
     environment:
       PUID: 1000
@@ -56,5 +54,6 @@ echo "------------------------------------------------"
 echo "Fatto. Flatnotes è stato avviato."
 echo "Indirizzo IP rilevato: $HOST_IP"
 echo "Porta selezionata: $PORT"
+echo "Nome container: flatnotes-$PORT"
 echo "Accessibile su: http://$HOST_IP:$PORT"
 echo "------------------------------------------------"
