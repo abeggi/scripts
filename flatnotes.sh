@@ -1,10 +1,13 @@
 #!/bin/bash
 
-# Verifica se lo script è eseguito come root (necessario per scrivere in /)
+# Verifica se lo script è eseguito come root
 if [ "$EUID" -ne 0 ]; then 
   echo "Errore: Eseguire questo script con sudo (sudo ./setup_flatnotes.sh)"
   exit 1
 fi
+
+# Rilevamento indirizzo IP dell'host
+HOST_IP=$(hostname -I | awk '{print $1}')
 
 # 1. Creazione cartella
 echo "Creazione cartella /flatnotes..."
@@ -33,4 +36,8 @@ echo "Avvio di Docker Compose..."
 cd /flatnotes
 docker compose up -d
 
-echo "Fatto. Flatnotes dovrebbe essere accessibile su http://localhost:9000"
+echo "------------------------------------------------"
+echo "Fatto. Flatnotes è stato avviato."
+echo "Indirizzo IP rilevato: $HOST_IP"
+echo "Accessibile su: http://$HOST_IP:9000"
+echo "------------------------------------------------"
