@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# esegui con wget https://github.com/abeggi/scripts/raw/refs/heads/main/flatnotes.sh -O - | bash
+
 # Verifica se lo script è eseguito come root
 if [ "$EUID" -ne 0 ]; then 
   echo "Errore: Eseguire questo script con sudo (sudo ./setup_flatnotes.sh)"
