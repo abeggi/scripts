@@ -6,16 +6,30 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Rilevamento indirizzo IP dell'host
+# 1. Rilevamento indirizzo IP dell'host
 HOST_IP=$(hostname -I | awk '{print $1}')
 
-# 1. Creazione cartella
+# 2. Scansione porte per trovare quella libera
+PORT=9000
+echo "Verifica disponibilità porta $PORT..."
+
+# Controlla se la porta è in ascolto usando ss
+# Il loop continua finché trova una porta occupata
+while ss -tuln | grep -qE ":${PORT}\s"; do
+    echo "Porta $PORT già in uso, provo la $((PORT + 1))..."
+    PORT=$((PORT + 1))
+done
+
+echo "Porta libera trovata: $PORT"
+
+# 3. Creazione cartella
 echo "Creazione cartella /flatnotes..."
 mkdir -p /flatnotes
 
-# 2. Creazione file compose.yaml
+# 4. Creazione file compose.yaml
+# Nota: Uso EOF senza apici per permettere l'espansione della variabile $PORT
 echo "Creazione file /flatnotes/compose.yaml..."
-cat > /flatnotes/compose.yaml << 'EOF'
+cat > /flatnotes/compose.yaml << EOF
 services:
   flatnotes:
     container_name: flatnotes
@@ -27,11 +41,11 @@ services:
     volumes:
       - "./data:/data"
     ports:
-      - "9000:8080"
+      - "$PORT:8080"
     restart: unless-stopped
 EOF
 
-# 3. Entrare nella cartella ed eseguire docker compose
+# 5. Entrare nella cartella ed eseguire docker compose
 echo "Avvio di Docker Compose..."
 cd /flatnotes
 docker compose up -d
@@ -39,5 +53,6 @@ docker compose up -d
 echo "------------------------------------------------"
 echo "Fatto. Flatnotes è stato avviato."
 echo "Indirizzo IP rilevato: $HOST_IP"
-echo "Accessibile su: http://$HOST_IP:9000"
+echo "Porta selezionata: $PORT"
+echo "Accessibile su: http://$HOST_IP:$PORT"
 echo "------------------------------------------------"
